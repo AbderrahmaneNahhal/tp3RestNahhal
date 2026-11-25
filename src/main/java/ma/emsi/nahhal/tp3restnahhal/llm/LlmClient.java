@@ -29,7 +29,8 @@ public class LlmClient {
                 .build();
     }
 
-    public String endroitsDeVisite(String lieu) {
-        return guide.chat(lieu);
+    public String endroitsDeVisite(String lieu, int nombre) {
+        return guide.chat(
+                "Lieu : " + lieu + "\nNombre d'endroits à visiter : " + nombre);
     }
 }

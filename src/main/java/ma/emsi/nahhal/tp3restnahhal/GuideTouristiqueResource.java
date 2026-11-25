@@ -1,10 +1,13 @@
 package ma.emsi.nahhal.tp3restnahhal;
 
 import jakarta.inject.Inject;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import ma.emsi.nahhal.tp3restnahhal.llm.LlmClient;
 
@@ -15,16 +18,24 @@ public class GuideTouristiqueResource {
     private LlmClient llmClient;
 
     /**
-     * Demande à Gemini les informations touristiques du lieu.
+     * Retourne les informations touristiques du lieu au format JSON.
      *
-     * @param lieu nom de la ville ou du pays
-     * @return objet JSON contenant deux endroits et le prix moyen d'un repas
+     * @param lieu ville ou pays demandé
+     * @param nombre nombre d'endroits à visiter, 2 par défaut
+     * @return informations touristiques générées par Gemini
      */
     @GET
     @Path("/lieu/{ville_ou_pays}")
     @Produces(MediaType.APPLICATION_JSON)
     public String endroitsDeVisite(
-            @PathParam("ville_ou_pays") String lieu) {
-        return llmClient.endroitsDeVisite(lieu);
+            @PathParam("ville_ou_pays") String lieu,
+            @QueryParam("nb") @DefaultValue("2") int nombre) {
+
+        if (nombre < 1) {
+            throw new BadRequestException(
+                    "Le paramètre nb doit être supérieur ou égal à 1.");
+        }
+
+        return llmClient.endroitsDeVisite(lieu, nombre);
     }
 }
